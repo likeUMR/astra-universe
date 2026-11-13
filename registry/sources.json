@@ -1,0 +1,14 @@
+[
+  {
+    "id": "azure",
+    "repository": "likeUMR/astra-planet-azure",
+    "commit": "cc0f033ad42b606c070992d26becdc59dadda8c3",
+    "position": [0, 0, 0]
+  },
+  {
+    "id": "ember",
+    "repository": "likeUMR/astra-planet-ember",
+    "commit": "7e37a5e472c65d6c9692eeee0381f8f2a3ac15aa",
+    "position": [80000, 1500, -15000]
+  }
+]

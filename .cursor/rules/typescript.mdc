@@ -1,0 +1,13 @@
+---
+description: Astra runtime boundaries and TypeScript conventions
+globs: "**/*.ts"
+alwaysApply: false
+---
+
+- Use strict types, explicit module ownership and small functions.
+- Keep author code in opaque-origin sandboxed workers; the renderer accepts validated data only.
+- Treat all package bytes, worker messages and generated scenes as untrusted input.
+- Model loading and warp as explicit states with failure and cancellation.
+- Keep world positions separate from render-relative positions.
+- Cover protocol validation, travel math and asynchronous lifecycle regressions with tests.
+- Release GPU resources and worker ownership explicitly.

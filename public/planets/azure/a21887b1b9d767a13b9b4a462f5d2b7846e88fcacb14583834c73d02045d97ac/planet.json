@@ -1,0 +1,8 @@
+{
+  "protocol": "astra-planet/0.1",
+  "name": "苍蓝",
+  "entry": "planet.js",
+  "seed": 101,
+  "radius": 1000,
+  "previewColor": "#4da6ff"
+}

@@ -1,0 +1,13 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+coverage/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+public/runtime/
+*.log
+.DS_Store

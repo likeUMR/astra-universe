@@ -1,0 +1,7 @@
+node_modules
+dist
+public/runtime
+public/planets
+test-results
+playwright-report
+package-lock.json

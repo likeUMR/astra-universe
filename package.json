@@ -1,0 +1,38 @@
+{
+  "name": "astra-universe",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build:worker && vite --host 127.0.0.1",
+    "build:worker": "esbuild src/generator/worker.ts --bundle --format=iife --minify --platform=browser --target=es2022 --outfile=public/runtime/generator.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "build": "npm run build:worker && npm run typecheck && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "sync:planets": "tsx scripts/sync-planets.ts",
+    "sync:local": "tsx scripts/sync-planets.ts --local",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "three": "0.187.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^24.0.0",
+    "@types/three": "^0.183.0",
+    "esbuild": "^0.27.0",
+    "eslint": "^9.39.0",
+    "prettier": "3.10.1",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.46.0",
+    "vite": "^7.2.0",
+    "vitest": "^4.0.0"
+  }
+}
