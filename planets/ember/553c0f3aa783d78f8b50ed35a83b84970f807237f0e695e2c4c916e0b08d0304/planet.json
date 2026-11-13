@@ -1,0 +1,8 @@
+{
+  "protocol": "astra-planet/0.1",
+  "name": "余烬",
+  "entry": "planet.js",
+  "seed": 202,
+  "radius": 1100,
+  "previewColor": "#ff9861"
+}

@@ -1,0 +1,45 @@
+{
+  "protocol": "astra-universe/0.1",
+  "planets": [
+    {
+      "protocol": "astra-planet/0.1",
+      "name": "苍蓝",
+      "entry": "planet.js",
+      "seed": 101,
+      "radius": 1000,
+      "previewColor": "#4da6ff",
+      "id": "azure",
+      "position": [0, 0, 0],
+      "source": {
+        "repository": "likeUMR/astra-planet-azure",
+        "commit": "cc0f033ad42b606c070992d26becdc59dadda8c3"
+      },
+      "package": {
+        "url": "planets/azure/a21887b1b9d767a13b9b4a462f5d2b7846e88fcacb14583834c73d02045d97ac/planet.js",
+        "sha256": "a21887b1b9d767a13b9b4a462f5d2b7846e88fcacb14583834c73d02045d97ac",
+        "bytes": 1436,
+        "totalBytes": 2643
+      }
+    },
+    {
+      "protocol": "astra-planet/0.1",
+      "name": "余烬",
+      "entry": "planet.js",
+      "seed": 202,
+      "radius": 1100,
+      "previewColor": "#ff9861",
+      "id": "ember",
+      "position": [80000, 1500, -15000],
+      "source": {
+        "repository": "likeUMR/astra-planet-ember",
+        "commit": "7e37a5e472c65d6c9692eeee0381f8f2a3ac15aa"
+      },
+      "package": {
+        "url": "planets/ember/553c0f3aa783d78f8b50ed35a83b84970f807237f0e695e2c4c916e0b08d0304/planet.js",
+        "sha256": "553c0f3aa783d78f8b50ed35a83b84970f807237f0e695e2c4c916e0b08d0304",
+        "bytes": 1437,
+        "totalBytes": 2644
+      }
+    }
+  ]
+}
