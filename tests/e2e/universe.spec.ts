@@ -90,7 +90,15 @@ test("ordinary flight reaches the other surface without a warp or coordinate jum
         },
         { timeout: 45_000, intervals: [250] },
       )
-      .toBeLessThan(1.15);
+      .toBeLessThan(1.01);
+    // Keep flying into the surface: the light dot must stop above the terrain.
+    await page.waitForTimeout(1_000);
+    const landed = await page.evaluate(() => window.__ASTRA__!.snapshot());
+    const target = landed.planets[1]!;
+    const altitude =
+      Math.hypot(...landed.position.map((v, axis) => v - target.position[axis]!)) - target.radius;
+    expect(altitude).toBeGreaterThanOrEqual(7.5);
+    expect(altitude).toBeLessThan(10);
   } finally {
     await page.keyboard.up("w");
     await page.keyboard.up("Shift");

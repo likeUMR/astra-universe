@@ -12,6 +12,7 @@
 | `src/engine/warp.ts`          | 跃迁状态和就绪屏障；失败、取消与原位置保留     |
 | `src/main.ts`                 | 启动、界面和调度装配                           |
 | `scripts/sync-planets.ts`     | 独立仓库的不可变版本发布                       |
+| `scripts/publish-pages.ts`    | 本地全量检查后发布可追溯的静态网站             |
 
 ## 代码规范
 
@@ -25,7 +26,8 @@
 
 `npm run check`：静态检查、类型检查、纯逻辑/场景数据测试、生产构建。
 `npm run test:e2e`：真实 Chromium，验证两星球、连续飞行、延迟加载跃迁、取消、禁网、超时和哈希失败。
-CI 在发布前执行以上检查。生产构建使用 `/astra-universe/` 子路径。
+`npm run publish:pages` 在发布前执行以上检查。生产构建使用 `/astra-universe/` 子路径。
+当前网站由 `gh-pages` 静态分支发布；可选云端工作流等待账号账单问题解决后启用。
 
 `window.__ASTRA__.snapshot()` 为只读观测：位置、状态、生成耗时、帧率与渲染资源数量。
 它不提供移动、越权加载或更改世界的测试后门。

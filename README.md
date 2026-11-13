@@ -42,10 +42,30 @@ npm run preview
 1. 复制一个测试星球仓库，编辑生成函数。
 2. 在 `registry/sources.json` 加入仓库、完整提交 SHA、唯一 ID 和坐标。
 3. `npm run sync:planets` 从 GitHub 固定提交获取并校验内容。
-4. 执行全部测试，提交主仓库，GitHub Actions 发布 Pages。
+4. 提交并推送主仓库，执行 `npm run publish:pages`；全部本地测试通过后发布静态分支。
 
 若三个仓库位于同一父目录，可以 `npm run sync:local` 从本地 Git 固定提交同步。
 该命令读取提交对象，不读取尚未提交的工作区内容。
+
+## 发布网站
+
+当前 GitHub Pages 的发布源是 `gh-pages` 分支根目录；源码在 `main`。
+主站已部署至上面的在线地址，无需后端服务。
+
+```sh
+git push origin main
+npm run publish:pages
+```
+
+发布命令要求 main 的改动已提交并推送，然后执行代码检查、10 项单元测试、
+7 项浏览器测试和带 `/astra-universe/` 子路径的生产构建。全部通过才更新 `gh-pages`，
+并写入 `release.json` 记录源提交。最后等待仓库的 Pages 部署任务成功。
+不会修改 main 工作区或强制覆盖远端发布历史。
+
+当前账号存在 GitHub 账单锁定，无法启动自定义 Actions 作业；不依赖该作业的 Pages 静态分支发布已经成功。
+`.github/workflows/pages.yml` 保留为手动云端验证与部署配置。
+恢复账号后，可将 Pages Source 切换至 GitHub Actions，再手动执行该配置。
+详细已执行结果见 [验证记录](docs/VALIDATION.md)。
 
 ## 规范
 

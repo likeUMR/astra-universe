@@ -1,8 +1,9 @@
-name: Verify and deploy Astra
+name: Optional cloud verification and deployment
 
 on:
-  push:
-    branches: [main]
+  # The current account cannot start custom jobs because of its billing lock.
+  # Until resolved, npm run publish:pages validates locally and publishes gh-pages.
+  # To use this workflow, first change Pages' build source to GitHub Actions.
   workflow_dispatch:
 
 permissions:

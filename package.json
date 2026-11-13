@@ -16,6 +16,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "sync:planets": "tsx scripts/sync-planets.ts",
     "sync:local": "tsx scripts/sync-planets.ts --local",
+    "publish:pages": "tsx scripts/publish-pages.ts",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build"
   },
   "dependencies": {
