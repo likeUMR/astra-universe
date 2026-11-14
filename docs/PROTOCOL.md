@@ -2,11 +2,16 @@
 
 本协议是首版的实际实现合同。每个仓库维护一颗有限、球形主体的程序化星球。
 
+人类接入入口：[CONTRIBUTING.md](../CONTRIBUTING.md)。
+AI 实现细节：[AI_AUTHORING.md](AI_AUTHORING.md)。
+2026-11-14 在 0.1 原型中补充空间和渲染边界；两个测试星球保持兼容。
+
 编辑器可使用 [planet.json 的 JSON Schema](../public/schemas/planet.schema.json) 进行输入提示。
 
 ## 发布文件
 
-`planet.json`、`planet.js`、`LICENSE` 的原始字节总和不得超过 **5,000,000 bytes**。
+发布的 `planet.json`、编译后的 `planet.js`、`LICENSE` 字节总和不得超过 **5,000,000 bytes**。
+同步获取的单个源文件也不得超过该大小。
 禁止模型、图片、字体、音视频、远程依赖和伪装成代码数组的预制美术资产。
 运行后生成的几何和像素不计发布体积，计入运行资源。
 
@@ -47,11 +52,31 @@ export function buildPlanet({ THREE, radius, seed, random, detail }) {
 - Uint8Array DataTexture，最大 512 × 512。无图片 URL、CanvasTexture、CubeTexture。
 - ShaderMaterial 的 `uTime` 由主站每帧更新。无任意逐帧 JS 回调和 onBeforeCompile。
 - 生成结果最多 100,000 三角形（乘实例数）、512 个节点、256 个几何、32 MiB JSON。
+- 按实例数累计最多检查 300,000 个变换后 CPU 顶点。
 - 标记地表必须是球面主体，位于中心的 0.5–1.5 倍半径范围内。附属结构不参与碰撞。
 - 不支持相机、灯光、DOM、renderer、controls 或全屏效果接管。
 
 每档生成最长 15 秒，单颗加载最长 45 秒。超时销毁 Worker；异常不破坏当前世界。
 目前发布者应人工复核生成代码和 Shader；此原型不作为任意恶意 GPU 程序的公共托管平台。
+
+## 宇宙背景与作者领地
+
+主站拥有统一背景星空、基础光照、相机、曝光、色调映射、旅行和 UI。
+作者仅提供自己的局部场景，不能替换背景、全局雾/环境/光照或增加全屏后处理。
+局部大气可以在玩家身处内部时占满视野，效果仍须来自该星球的有限体积。
+
+返回独立根 Group，保持原点、默认旋转和单位缩放。全部父级和实例变换后的 CPU 顶点
+必须在中心 **2R** 内；标记地表顶点在 **0.5R–1.5R** 内。检查容差 R×10^-5。
+局部效果也应留在 2R 内，不能扩散至其他星球。星图预留不相交的 2R 领地。
+GPU 位移贴图、morph 与 Shader 顶点位移不支持；在 CPU 中直接生成地貌。
+
+材质必须保持 depthTest，depthFunc 仅 LessDepth/ LessEqualDepth，禁止 stencilWrite、polygonOffset 和 colorWrite=false，
+renderOrder=0，混合仅 NoBlending/NormalBlending/AdditiveBlending。透明材质允许 depthWrite=false。
+PointsMaterial 必须随距离衰减，尺寸在 (0,32] 世界单位内。
+
+自定义 Shader 只给自己的网格着色，保留正常几何投影；不写 gl_FragDepth，不通过 gl_Position
+或 gl_PointSize 扩大实际影响区域。主站只自动更新 uTime；无作者逐帧 JS。
+这些 GLSL 行为与 GPU 代价当前由人工审核；数据校验不构成任意 Shader 的硬空间或 GPU 隔离。
 
 ## 隔离与网络
 
@@ -72,7 +97,7 @@ export function buildPlanet({ THREE, radius, seed, random, detail }) {
 
 运行时仅下载相对路径 `planets/<id>/<sha256>/planet.js`，下载后再次校验字节数和 SHA-256。
 作者仓库更新不会自动替换批准版本。更新需重新登记提交并同步。
-相邻星球包围范围不得重叠。重命名、版本变化不改变 id 和坐标。
+相邻星球的 2R 领地不得重叠。重命名、版本变化不改变 id 和坐标。
 
 ## 游览与加载
 

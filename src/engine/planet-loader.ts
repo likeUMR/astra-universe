@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { MAX_PACKAGE_BYTES, sha256, type PlanetRecord } from "../core/protocol";
 import { generate } from "../generator/sandbox";
+import { validateTerritory } from "../generator/territory";
 import { disposeObject } from "./resources";
 
 export type LoadStage = "idle" | "downloading" | "generating" | "preparing" | "ready" | "error";
@@ -120,6 +121,7 @@ export class PlanetLoader {
         const preparation = performance.now();
         const object = new THREE.ObjectLoader().parse(snapshot);
         try {
+          validateTerritory(object, asset.planet.radius);
           await this.warm(object, controller.signal);
         } catch (error) {
           disposeObject(object);

@@ -1,4 +1,27 @@
 import { test, expect, type Page } from "@playwright/test";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { transformSync } from "esbuild";
+
+async function replacePlanet(page: Page, id: string, source: string) {
+  const sha256 = createHash("sha256").update(source).digest("hex");
+  const bytes = Buffer.byteLength(source);
+  await page.route("**/universe.json", async (route) => {
+    const response = await route.fetch();
+    const json = await response.json();
+    const planet = json.planets.find((p: { id: string }) => p.id === id);
+    planet.package = {
+      url: `planets/${id}/${sha256}/planet.js`,
+      sha256,
+      bytes,
+      totalBytes: bytes + 2000,
+    };
+    await route.fulfill({ json });
+  });
+  await page.route(`**/planets/${id}/**/planet.js`, (route) =>
+    route.fulfill({ body: source, contentType: "text/javascript" }),
+  );
+}
 
 async function enter(page: Page) {
   await page.goto("/");
@@ -177,4 +200,51 @@ test("tampered source is rejected before execution", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("#intro-state")).toContainText("校验失败");
   await expect(page.getByRole("button", { name: "重新加载" })).toBeEnabled();
+});
+
+test("the documented local shader generates and compiles in the real world", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error" && message.text().includes("Shader"))
+      errors.push(message.text());
+  });
+  const example = readFileSync(new URL("../../examples/shader-planet.js", import.meta.url), "utf8");
+  const source = transformSync(example, { format: "iife", globalName: "AstraPlanet" }).code;
+  await replacePlanet(page, "azure", source);
+  await enter(page);
+  await expect
+    .poll(() => page.evaluate(() => window.__ASTRA__!.snapshot().planets[0]!.stage))
+    .toBe("ready");
+  expect(errors).toEqual([]);
+});
+
+test("an out-of-territory planet fails without moving or breaking the current world", async ({
+  page,
+}) => {
+  await replacePlanet(
+    page,
+    "ember",
+    `var AstraPlanet = { buildPlanet: function({THREE,radius}) {
+      const root = new THREE.Group();
+      const surface = new THREE.Mesh(new THREE.SphereGeometry(radius,16,8),new THREE.MeshBasicMaterial());
+      surface.userData.astraSurface = true;
+      root.add(surface);
+      root.add(new THREE.Mesh(new THREE.SphereGeometry(radius*3,8,4),new THREE.MeshBasicMaterial()));
+      return root;
+    } };`,
+  );
+  await enter(page);
+  const initial = await page.evaluate(() => window.__ASTRA__!.snapshot().position);
+  await expect
+    .poll(() => page.evaluate(() => window.__ASTRA__!.snapshot().planets[1]!.stage))
+    .toBe("error");
+  await page.locator("#warp-button").click();
+  await expect(page.locator("#toast")).toContainText("领地");
+  await expect(page.locator(".warp")).toBeHidden();
+  const state = await page.evaluate(() => window.__ASTRA__!.snapshot());
+  expect(state.position).toEqual(initial);
+  expect(state.planets[0]!.stage).toBe("ready");
+  await page.locator('[data-planet="azure"]').click();
+  await expect(page.locator("#target-name")).toHaveText("苍蓝");
 });

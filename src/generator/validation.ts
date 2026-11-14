@@ -1,4 +1,5 @@
 import { assert, isRecord, MAX_GENERATED_BYTES, MAX_TRIANGLES } from "../core/protocol";
+import { AdditiveBlending, LessDepth, LessEqualDepth, NoBlending, NormalBlending } from "three";
 
 const objectTypes = new Set([
   "Group",
@@ -75,6 +76,7 @@ export function validateSnapshot(value: unknown): SceneSnapshot {
       "场景含禁止的对象",
     );
     assert(depth < 32 && ++nodes <= 512, "场景层级或节点数量超限");
+    assert(node.renderOrder === undefined || node.renderOrder === 0, "禁止修改全局渲染顺序");
     if (typeof node.geometry === "string") {
       assert(geometryTriangles.has(node.geometry), "几何引用无效");
       const instances = node.type === "InstancedMesh" ? Number(node.count) : 1;
@@ -101,6 +103,21 @@ export function validateSnapshot(value: unknown): SceneSnapshot {
       isRecord(material) && typeof material.type === "string" && materialTypes.has(material.type),
       "材质不受支持",
     );
+    assert(
+      (material.depthTest === undefined || material.depthTest === true) &&
+        (material.depthFunc === undefined ||
+          material.depthFunc === LessDepth ||
+          material.depthFunc === LessEqualDepth) &&
+        (material.stencilWrite === undefined || material.stencilWrite === false) &&
+        (material.colorWrite === undefined || material.colorWrite === true) &&
+        (material.polygonOffset === undefined || material.polygonOffset === false) &&
+        (material.blending === undefined ||
+          material.blending === NoBlending ||
+          material.blending === NormalBlending ||
+          material.blending === AdditiveBlending),
+      "材质违反渲染边界：保留深度检测，禁止模板写入、深度偏移、隐藏遮挡和自定义混合",
+    );
+    assert(material.displacementMap === undefined, "首版禁止 GPU 位移贴图，请在 CPU 生成地形");
   }
   assert(Array.isArray(value.images ?? []), "图片数据无效");
   for (const image of (value.images ?? []) as unknown[]) {

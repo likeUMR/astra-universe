@@ -5,6 +5,15 @@
 
 **在线游览：<https://likeUMR.github.io/astra-universe/>**
 
+## 制作自己的星球
+
+- **人类快速入口：[用代码加入 Astra](CONTRIBUTING.md)**，了解能做什么、不能接管什么，以及如何提交。
+- **交给 AI：[AI 作者详细规范](docs/AI_AUTHORING.md)**，包含完整参数、空间/Shader 边界、预算、预览和审核要求。
+- [局部 Shader 示例](examples/shader-planet.js) 可直接作为作者入口参考，不会替换主站背景。
+
+主站提供统一宇宙背景、基础光照和旅行；作者创作自己的有限星球。
+静态几何有 2R 领地校验，任意 Shader 的实际视觉范围和 GPU 耗时仍需审核。
+
 ## 启动
 
 需要 Node.js 24+。
@@ -57,12 +66,12 @@ git push origin main
 npm run publish:pages
 ```
 
-发布命令要求 main 的改动已提交并推送，然后执行代码检查、10 项单元测试、
-7 项浏览器测试和带 `/astra-universe/` 子路径的生产构建。全部通过才更新 `gh-pages`，
+发布命令要求 main 的改动已提交并推送，然后执行代码检查、全部单元测试、
+浏览器测试和带 `/astra-universe/` 子路径的生产构建。全部通过才更新 `gh-pages`，
 并写入 `release.json` 记录源提交。最后等待仓库的 Pages 部署任务成功。
 不会修改 main 工作区或强制覆盖远端发布历史。
 
-当前账号存在 GitHub 账单锁定，无法启动自定义 Actions 作业；不依赖该作业的 Pages 静态分支发布已经成功。
+2026-11-13 首次自定义 Actions 作业因账号账单锁定未能启动；不依赖该作业的 Pages 静态分支发布已经成功。
 `.github/workflows/pages.yml` 保留为手动云端验证与部署配置。
 恢复账号后，可将 Pages Source 切换至 GitHub Actions，再手动执行该配置。
 详细已执行结果见 [验证记录](docs/VALIDATION.md)。

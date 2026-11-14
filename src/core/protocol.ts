@@ -3,6 +3,8 @@ export const UNIVERSE_PROTOCOL = "astra-universe/0.1" as const;
 export const MAX_PACKAGE_BYTES = 5_000_000;
 export const MAX_GENERATED_BYTES = 32 * 1024 * 1024;
 export const MAX_TRIANGLES = 100_000;
+export const PLANET_TERRITORY_SCALE = 2;
+export const MAX_TRANSFORMED_VERTICES = 300_000;
 
 export interface PlanetManifest {
   protocol: typeof PLANET_PROTOCOL;
@@ -106,15 +108,15 @@ export function parseUniverse(value: unknown): Universe {
     );
     return item as unknown as PlanetRecord;
   });
-  // Prevent overlapping surface envelopes, not just duplicate centers.
+  // Reserve the whole territory, including rings and local atmospheric effects.
   for (let i = 0; i < planets.length; i++) {
     for (let j = i + 1; j < planets.length; j++) {
       const a = planets[i]!;
       const b = planets[j]!;
       assert(
         Math.hypot(...a.position.map((v, axis) => v - b.position[axis]!)) >
-          (a.radius + b.radius) * 1.5,
-        "星球包围范围重叠",
+          (a.radius + b.radius) * PLANET_TERRITORY_SCALE,
+        "星球领地重叠",
       );
     }
   }

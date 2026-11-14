@@ -33,6 +33,9 @@ describe("published immutable protocol", () => {
     const overlap = changed();
     overlap.planets[1].position = [1, 1, 1];
     expect(() => parseUniverse(overlap)).toThrow();
+    const effectOverlap = changed();
+    effectOverlap.planets[1].position = [3800, 0, 0];
+    expect(() => parseUniverse(effectOverlap)).toThrow("领地");
   });
 
   it("rejects invalid numbers and entry paths", () => {

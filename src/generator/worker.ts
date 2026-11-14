@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { validateSnapshot } from "./validation";
+import { validateTerritory } from "./territory";
 
 interface BuildRequest {
   source: string;
@@ -33,14 +34,15 @@ self.onmessage = async (event: MessageEvent<BuildRequest>) => {
     let hasSurface = false;
     root.traverse((object) => {
       const mesh = object as THREE.Mesh;
-      if (mesh.isMesh) {
+      if (mesh.geometry) {
         const old = mesh.geometry;
         mesh.geometry = new THREE.BufferGeometry().copy(old);
-        if (object.userData.astraSurface === true) hasSurface = true;
       }
+      if (mesh.isMesh && object.userData.astraSurface === true) hasSurface = true;
     });
     if (!hasSurface) throw new Error("需要标记 userData.astraSurface 的地表网格");
     const snapshot = validateSnapshot(root.toJSON());
+    validateTerritory(root, parameters.radius);
     self.postMessage({ type: "result", snapshot });
   } catch (error) {
     self.postMessage({

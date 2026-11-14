@@ -11,3 +11,6 @@
 - Run `npm run check` and `npm run test:e2e` before publishing changes to runtime or protocol.
 - Never commit credentials, dependency folders or browser test artifacts.
 - Update `docs/PROTOCOL.md` whenever the author contract changes.
+- Keep `CONTRIBUTING.md` concise and `docs/AI_AUTHORING.md` detailed; keep both aligned with the implemented protocol.
+- The host owns the universe background and lighting. Validate each planet's identity root, 2R CPU territory and 0.5R–1.5R surface after all transforms, again in the main window before GPU preparation.
+- Distinguish enforced data/render-state checks from reviewed GLSL behavior. Never claim CPU geometry checks or Worker isolation sandbox arbitrary GPU shaders.

@@ -28,9 +28,11 @@ async function get(repository: string, commit: string, file: string): Promise<Bu
   assert(/^[\w.-]+\/[\w.-]+$/.test(repository) && /^[a-f0-9]{40}$/.test(commit), "仓库或提交无效");
   if (local) {
     const checkout = resolve(root, "..", repository.split("/")[1]!);
-    return execFileSync("git", ["-C", checkout, "show", `${commit}:${file}`], {
+    const data = execFileSync("git", ["-C", checkout, "show", `${commit}:${file}`], {
       maxBuffer: MAX_PACKAGE_BYTES + 1,
     });
+    assert(data.byteLength <= MAX_PACKAGE_BYTES, "文件超过 5 MB");
+    return data;
   }
   const response = await fetch(
     `https://raw.githubusercontent.com/${repository}/${commit}/${file}`,

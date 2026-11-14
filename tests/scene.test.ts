@@ -48,4 +48,39 @@ describe("generated scene boundary", () => {
     (root.children[0] as THREE.Mesh).geometry.setIndex([0, 1, 999999]);
     expect(() => validateSnapshot(root.toJSON())).toThrow("索引");
   });
+  it.each([
+    ["depth test", { depthTest: false }],
+    ["non-boolean depth test", { depthTest: 0 }],
+    ["depth function", { depthFunc: THREE.AlwaysDepth }],
+    ["stencil", { stencilWrite: true }],
+    ["non-boolean stencil", { stencilWrite: 1 }],
+    ["invisible occluder", { colorWrite: false }],
+    ["non-boolean color mask", { colorWrite: 0 }],
+    ["depth offset", { polygonOffset: true, polygonOffsetFactor: -1000000 }],
+    ["custom blending", { blending: THREE.CustomBlending }],
+  ])("rejects material control outside a planet: %s", (_name, properties) => {
+    const root = sample();
+    const mesh = root.children[0] as THREE.Mesh;
+    Object.assign(mesh.material, properties);
+    expect(() => validateSnapshot(root.toJSON())).toThrow("渲染边界");
+  });
+  it("rejects overriding the universe's render order", () => {
+    const root = sample();
+    root.children[0]!.renderOrder = 1000;
+    expect(() => validateSnapshot(root.toJSON())).toThrow("渲染顺序");
+  });
+  it("allows local transparent effects with normal depth testing", () => {
+    const root = sample();
+    const mesh = root.children[0] as THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>;
+    mesh.material.transparent = true;
+    mesh.material.depthWrite = false;
+    mesh.material.blending = THREE.AdditiveBlending;
+    expect(() => validateSnapshot(root.toJSON())).not.toThrow();
+  });
+  it("rejects GPU displacement maps that escape CPU territory and collision checks", () => {
+    const root = sample();
+    const mesh = root.children[0] as THREE.Mesh<THREE.BufferGeometry, THREE.MeshStandardMaterial>;
+    mesh.material.displacementMap = mesh.material.map;
+    expect(() => validateSnapshot(root.toJSON())).toThrow("位移");
+  });
 });
